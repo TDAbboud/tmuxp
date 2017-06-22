@@ -7,6 +7,7 @@ tmuxp.cli
 """
 from __future__ import absolute_import, print_function, with_statement
 
+import glob
 import logging
 import os
 import sys
@@ -14,6 +15,7 @@ import sys
 import click
 import kaptan
 from click.exceptions import FileError
+from itertools import chain
 from libtmux.common import has_minimum_version, which
 from libtmux.exc import TmuxCommandNotFound
 from libtmux.server import Server
@@ -518,6 +520,18 @@ def command_load(ctx, config, socket_name, socket_path, answer_yes,
 
         # todo: obey the -d in the cli args only if user specifies
         load_workspace(config[-1], **tmux_options)
+
+
+@cli.command(name='list', short_help='List all tmuxp workspaces.')
+def command_list():
+    """ List the tmuxp workspaces """
+    config_dir = get_config_dir()
+    if not os.path.isdir(config_dir):
+        print('No workspaces found')
+    else:
+        print('Tmuxp Workspaces:')
+        for filename in config.in_dir(config_dir):
+            print(os.path.splitext(filename)[0])
 
 
 @cli.group(name='import')
